@@ -13,7 +13,8 @@
 
 #define MAXARGS 10
 
-struct cmd {
+struct  
+cmd {
   int type;
 };
 
@@ -164,7 +165,7 @@ main(void)
         fprintf(2, "cannot cd %s\n", buf+3);
       continue;
     }
-    if(fork1() == 0)
+    if(fork1() == 0)  //先执行fork1(),返回值为0说明是子进程，再执行runcmd，若返回值不是0，就不执行runcmd
       runcmd(parsecmd(buf));
     wait(0);
   }
