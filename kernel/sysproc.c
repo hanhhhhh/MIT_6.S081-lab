@@ -95,3 +95,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+//trace function
+uint64
+sys_trace(){
+  //remembering its argument in a new variable in the proc structure
+  int mask;
+  if(argint(0, &mask) < 0)     //将p-trapframe->a0的值读出存到mask中
+    return -1;
+  myproc()->trace_mask=mask;
+  return 0;
+}
