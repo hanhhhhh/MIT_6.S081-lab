@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -105,5 +106,27 @@ sys_trace(){
   if(argint(0, &mask) < 0)     //将p-trapframe->a0的值读出存到mask中
     return -1;
   myproc()->trace_mask=mask;
+  return 0;
+}
+
+//sysinfo function
+//sys_function都是没有形参的
+// int sysinfo(struct sysinfo *info){ user中的sysinfo是有参数的，但其系统调用kernel中的sys_sysinfo是没有参数的，参数存在trapframe中，需要从trapfram中取出
+extern uint64 get_freemem(void);
+extern uint64 get_procnum(void);
+
+int sys_sysinfo(void){
+  //dst
+  uint64 dst; // user pointer to struct stat
+  //sysinfo只有唯一一个参数
+  if(argaddr(0, &dst) < 0)
+    return -1;
+  struct sysinfo tempinfo;
+  tempinfo.freemem=get_freemem();
+  tempinfo.nproc=get_procnum();
+  //Copy from kernel to &info.
+  if(copyout(myproc()->pagetable,dst,(char *)&tempinfo,sizeof(tempinfo))){
+     return -1;
+  }   
   return 0;
 }
