@@ -432,3 +432,29 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+void vmprint(pagetable_t pagetable,int level){
+  //print the argument to vmprint
+  if(level==0){
+    printf("page table %p\n",pagetable);
+    vmprint(pagetable,level+1);
+  }
+  else if(level>0 && level<=3){
+    for(int i=0;i<512;i++){
+      pte_t pte=pagetable[i];
+      if(pte & PTE_V){  //检查有效性
+        //打印在树中的深度
+        for(int i=0;i<level;i++){
+          printf(" ..");
+        }
+        uint64 child = PTE2PA(pte);
+        //print: index pte pa
+        printf("%d: pte %p pa %p\n",i,pte,child);
+        vmprint((pagetable_t)child,level+1);
+      }
+    }
+  }
+  else{
+    return ;
+  }
+}
