@@ -119,7 +119,10 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
-
+  //initialize proc fields
+  p->lc_ticks=0;  
+  p->ticks=0;
+  p->ph=0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -164,6 +167,10 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+
+  p->ticks=0;
+  p->lc_ticks=0;
+  p->ph=0;
 }
 
 // Create a user page table for a given process,

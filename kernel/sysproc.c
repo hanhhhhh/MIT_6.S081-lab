@@ -96,3 +96,21 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_sigalarm(void){
+  int ticks;
+  if(argint(0, &ticks) < 0)
+    return -1;
+  uint64 pointer;
+  if(argaddr(1, &pointer)<0)
+    return -1;
+  myproc()->ticks=ticks;   //存储alarm interval
+  myproc()->ph=pointer;    //存储pointer to the handle function
+  return 0;
+}
+
+uint64 
+sys_sigreturn(void){
+  return 0;
+}

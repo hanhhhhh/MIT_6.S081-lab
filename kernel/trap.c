@@ -78,7 +78,16 @@ usertrap(void)
 
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2)
+  {
+    p->lc_ticks++;
+    if(p->lc_ticks==p->ticks){   //达到alarm interval
+      //更新p->trapframe->epc,用户进程执行处理函数 handle
+      p->trapframe->epc =p->ph;
+      p->lc_ticks=0;
+    }
     yield();
+  }
+    
 
   usertrapret();
 }
