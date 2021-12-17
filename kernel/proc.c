@@ -123,8 +123,15 @@ found:
   p->lc_ticks=0;  
   p->ticks=0;
   p->ph=0;
+  p->in_handler=0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+
+  if((p->pretrapframe = (struct trapframe *)kalloc()) == 0){   //alloc page for pretrapframe
     freeproc(p);
     release(&p->lock);
     return 0;
@@ -171,6 +178,10 @@ freeproc(struct proc *p)
   p->ticks=0;
   p->lc_ticks=0;
   p->ph=0;
+  if(p->pretrapframe)
+    kfree((void*)p->pretrapframe);
+  p->pretrapframe = 0;
+  p->in_handler=0;
 }
 
 // Create a user page table for a given process,

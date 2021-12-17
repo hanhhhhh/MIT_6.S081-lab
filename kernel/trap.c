@@ -81,9 +81,15 @@ usertrap(void)
   {
     p->lc_ticks++;
     if(p->lc_ticks==p->ticks){   //达到alarm interval
-      //更新p->trapframe->epc,用户进程执行处理函数 handle
-      p->trapframe->epc =p->ph;
-      p->lc_ticks=0;
+      //save register
+      if(p->in_handler==0) //当前已经在handler中
+      {
+        *p->pretrapframe=*p->trapframe;
+        p->in_handler=1;
+        //调用handle
+        //更新p->trapframe->epc,用户进程执行处理函数 handle
+        p->trapframe->epc =p->ph;
+      }
     }
     yield();
   }

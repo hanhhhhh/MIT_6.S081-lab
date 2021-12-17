@@ -112,5 +112,9 @@ sys_sigalarm(void){
 
 uint64 
 sys_sigreturn(void){
+  *(myproc()->trapframe)=*(myproc()->pretrapframe);
+  myproc()->in_handler=0;
+  myproc()->lc_ticks=0;
+  //restore register
   return 0;
 }

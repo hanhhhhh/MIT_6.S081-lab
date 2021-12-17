@@ -96,7 +96,8 @@ struct proc {
   int ticks;                 // alarm interval 
   uint64 ph;                  // pointer to the handler function
   int lc_ticks;            //  last call to a process's alarm handle time
-
+  struct trapframe *pretrapframe;   //save the trapframe state before invoke handle
+  int in_handler;              //标记当前是否在handle中
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
 
